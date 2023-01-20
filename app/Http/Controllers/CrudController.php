@@ -21,20 +21,13 @@ class CrudController extends Controller
     public function index()
     {
 
+        session_start();
         function ChangeFormatDate($originalDate){
             return Carbon::createFromFormat('Y-m-d', $originalDate)->locale('id')->isoFormat('LL');
         }
-
         $dataclient = tb_m_client::all();
         $dataproject = tb_m_project::join('tb_m_clients', 'tb_m_projects.client_id', '=','tb_m_clients.client_id')->select('tb_m_projects.*','tb_m_clients.*')->get();
-        // $username = User::where('email', $request->email)->get();
-        // return view('index')->with(['token' => $token, 'dataclient' => $dataclient, 'dataproduct' => $dataproduct, 'username' => strtoupper($username[0]->name)]);
-
-        // $originalDate = $dataproject[0]->project_start;
-        // return ChangeFormatDate($originalDate);
-
         $dataconvert = array();
-
         foreach ($dataproject as $key => $value) {
             $dataconvert[] = ([
                 'project_id' => $value->project_id,
@@ -45,9 +38,10 @@ class CrudController extends Controller
                 'project_status' => $value->project_status,
             ]);
         }
+        $username = $_SESSION["username"];
+        $token_session = $_SESSION["token"];
+        return view('index')->with(['dataclient' => $dataclient, 'dataproduct' => $dataconvert, 'username' => strtoupper($username), 'token_session' => $token_session]);
 
-        return view('index')->with(['dataclient' => $dataclient, 'dataproduct' => $dataconvert]);
-        // return view('index')->with(['dataclient' => $dataclient, 'dataproduct' => $dataproject]);
     }
 
     public function save(Request $request){
@@ -125,6 +119,15 @@ class CrudController extends Controller
             return view('index')->with(['dataclient' => $dataclient, 'dataproduct' => $dataconvert]);
         }
 
+    }
+
+    public function logout()
+    {
+        // auth()->logout();
+        session_start();
+        session_unset();
+        session_destroy();
+        return redirect('/');
     }
 
 }

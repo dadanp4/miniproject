@@ -6,6 +6,7 @@ use App\tb_m_client;
 use App\tb_m_project;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 
@@ -42,7 +43,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-
+        session_start();
         $request->validate([
             'email' => 'required',
             'password' => 'required'
@@ -54,22 +55,27 @@ class AuthController extends Controller
             return response()->json(['error' => 'Email atau password tidak sesuai'], 401);
         }else{
             // return $this->respondWithToken($token);
-            session(['token' => $token]);
+            // session(['token' => $token]);
+            $user = User::where('email', $request->email)->first();
+            $_SESSION["username"] = $user->name;
+            $_SESSION["token"] = $token;
             return redirect('api/auth/index');
         }
     }
 
     public function me()
     {
-        // return response()->json(auth()->user());
+        return response()->json(auth()->user());
         return User::all();
     }
 
-    public function logout()
-    {
-        auth()->logout();
-        return redirect('/');
-    }
+    // public function logout()
+    // {
+        // auth()->logout();
+        // session_unset();
+        // session_destroy();
+    //     return redirect('/');
+    // }
 
     public function refresh()
     {
