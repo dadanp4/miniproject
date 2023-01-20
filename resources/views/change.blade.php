@@ -501,7 +501,9 @@
                 </div>
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
-                    <form action="/" method="GET">
+                    <form action="/api/auth/logout" method="POST">
+                        @csrf
+                        <input type="text" name="token" value="{{ $token_session }}" hidden>
                         <button class="btn btn-primary">Logout</button>
                     </form>
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>

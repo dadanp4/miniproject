@@ -62,9 +62,12 @@ class CrudController extends Controller
     }
 
     public function change(Request $request){
+        session_start();
+        $username = $_SESSION["username"];
+        $token_session = $_SESSION["token"];
         $dataclient = tb_m_client::all();
         $dataproject = tb_m_project::join('tb_m_clients', 'tb_m_projects.client_id', '=','tb_m_clients.client_id')->select('tb_m_projects.*','tb_m_clients.*')->where('tb_m_projects.project_id', 'like', '%'.$request->id.'%')->get();
-        return view('change')->with(['dataclient' => $dataclient, 'dataproduct' => $dataproject]);
+        return view('change')->with(['dataclient' => $dataclient, 'dataproduct' => $dataproject, 'username' => $username, 'token_session' => $token_session]);
     }
 
     public function changedata(Request $request){
@@ -92,6 +95,9 @@ class CrudController extends Controller
 
     public function search(Request $request){
 
+        session_start();
+        $username = $_SESSION["username"];
+        $token_session = $_SESSION["token"];
         function ChangeFormatDateSearch($originalDate){
             return Carbon::createFromFormat('Y-m-d', $originalDate)->locale('id')->isoFormat('LL');
         }
@@ -113,10 +119,10 @@ class CrudController extends Controller
         }
 
         if (count($dataproject) > 0) {
-            return view('index')->with(['dataclient' => $dataclient, 'dataproduct' => $dataconvert]);
+            return view('index')->with(['dataclient' => $dataclient, 'dataproduct' => $dataconvert, 'username' => $username, 'token_session' => $token_session]);
         }else{
             session()->flash('message_search', 'data tidak ditemukan');
-            return view('index')->with(['dataclient' => $dataclient, 'dataproduct' => $dataconvert]);
+            return view('index')->with(['dataclient' => $dataclient, 'dataproduct' => $dataconvert, 'username' => $username, 'token_session' => $token_session]);
         }
 
     }
